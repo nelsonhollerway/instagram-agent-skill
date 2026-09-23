@@ -118,8 +118,12 @@ def check_fingerprint(text):
     return score, detail
 
 
-def check_voice(text, lex):
+def check_voice(text, lex, skip_structures=None, voice_baseline=None):
     """Contractions, person, and the shapes models default to."""
+    skip_structures = skip_structures or set()
+    vb = voice_baseline or {}
+    contractions_human = vb.get("contractions_human", 3.0)
+    person_human = vb.get("person_human", 8.0)
     w = words(text)
     if len(w) < 25:
         return 50.0, "too short to judge"
@@ -129,6 +133,8 @@ def check_voice(text, lex):
     tells = 0
     names = []
     for s in lex["structures"]:
+        if s["id"] in skip_structures:
+            continue
         try:
             n = len(re.compile(s["regex"], re.MULTILINE).findall(text))
         except re.error:
@@ -138,8 +144,8 @@ def check_voice(text, lex):
             names.append(s["id"])
     bullets = [len(b.split()) for b in re.findall(r"(?m)^\s*[-*•]\s+(.+)$", text)]
     uniform = (len(bullets) >= 3 and statistics.pstdev(bullets) < 1.6)
-    score = (scale(contractions, human=3.0, machine=0.0) * 0.35
-             + scale(person, human=8.0, machine=1.0) * 0.35
+    score = (scale(contractions, human=contractions_human, machine=0.0) * 0.35
+             + scale(person, human=person_human, machine=1.0) * 0.35
              + clamp(100 - tells * 22) * 0.30)
     if uniform:
         score -= 12
@@ -154,13 +160,19 @@ def check_voice(text, lex):
 CHECKS = ["BURSTINESS", "SPECIFICITY", "SLOP DENSITY", "FINGERPRINT", "VOICE"]
 
 
-def run(text, lex):
+def run(text, lex, fmt=None):
+    skip_structures = set()
+    voice_baseline = None
+    if fmt:
+        fmt_cfg = lex.get("formats", {}).get(fmt, {})
+        skip_structures = set(fmt_cfg.get("skip_structures", []))
+        voice_baseline = fmt_cfg.get("voice_baseline")
     results = {}
     results["BURSTINESS"] = check_burstiness(text)
     results["SPECIFICITY"] = check_specificity(text)
     results["SLOP DENSITY"] = check_slop(text, lex)
     results["FINGERPRINT"] = check_fingerprint(text)
-    results["VOICE"] = check_voice(text, lex)
+    results["VOICE"] = check_voice(text, lex, skip_structures, voice_baseline)
     scores = [results[c][0] for c in CHECKS]
     # The weakest check drags the verdict: a detector only needs one signal.
     overall = statistics.mean(scores) * 0.6 + min(scores) * 0.4
@@ -196,6 +208,10 @@ def main():
     ap.add_argument("compare", nargs="?", help="second file, to show before/after")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--lexicon", default=LEX)
+    ap.add_argument("--format", dest="fmt", default=None,
+                     help="content format from slop.json's \"formats\" block "
+                          "(e.g. recipe-card) - suppresses structural-tell "
+                          "checks that are that format's real house style")
     args = ap.parse_args()
 
     lex = json.load(open(args.lexicon, encoding="utf-8"))
@@ -207,7 +223,7 @@ def main():
 
     payload = []
     for name, text in targets:
-        results, overall, verdict = run(text, lex)
+        results, overall, verdict = run(text, lex, args.fmt)
         payload.append({
             "source": name,
             "checks": {k: {"score": round(v[0], 1), "detail": v[1]} for k, v in results.items()},
@@ -220,7 +236,7 @@ def main():
         return
 
     for (name, text), p in zip(targets, payload):
-        results, overall, verdict = run(text, lex)
+        results, overall, verdict = run(text, lex, args.fmt)
         render(results, overall, verdict, label=os.path.basename(name) if args.compare else None)
     if args.compare:
         a, b = payload

@@ -15,6 +15,16 @@ storefront people browse. It is a **decision screen**, arrived at from one
 reel, and it gets about three seconds to answer one question: is there more of
 that here, and is it for me.
 
+## Voice
+
+If the user names a page, brand or account for this request, look first for
+`~/.claude/instagram/voice-<page>.md`, where `<page>` is that name lowercased
+with spaces and punctuation turned to dashes, and use that instead of the
+default. Otherwise read `~/.claude/instagram/voice.md` if it exists. If
+neither file exists, ask which page this is for (when more than one
+`voice-*.md` file exists in `~/.claude/instagram/`) and write in the voice the
+user describes.
+
 ## Input
 
 Ask the user to paste or screenshot: the name field, the handle, the bio, what

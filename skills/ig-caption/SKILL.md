@@ -21,6 +21,16 @@ It prints the caption the way the feed prints it: the first 125 characters in a
 box, everything else behind the tap. Read that box before you read anything
 else you wrote.
 
+## Voice
+
+If the user names a page, brand or account for this request, look first for
+`~/.claude/instagram/voice-<page>.md`, where `<page>` is that name lowercased
+with spaces and punctuation turned to dashes, and use that instead of the
+default. Otherwise read `~/.claude/instagram/voice.md` if it exists. If
+neither file exists, ask which page this is for (when more than one
+`voice-*.md` file exists in `~/.claude/instagram/`) and write in the voice the
+user describes.
+
 ## First, decide which job this caption has
 
 This is the decision that ruins captions when it is skipped.

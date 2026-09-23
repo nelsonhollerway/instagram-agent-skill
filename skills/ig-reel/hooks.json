@@ -269,6 +269,28 @@
       "best_for": "One-claim videos with no story attached. It is the most common shape in the wild and the easiest to write badly.",
       "trap": "A superlative with a soft answer. If the second half is 'consistency', you have said nothing and the comments will tell you.",
       "match": "^\\s*(?:the\\s+)?(?:fastest|quickest|best|worst|biggest|greatest|easiest|hardest|only|number one|#1|most important)\\s+\\w+|\\bthe (?:fastest|best|worst|biggest|greatest|only) way to\\b"
+    },
+    {
+      "id": 27,
+      "name": "Before I Knew Better",
+      "template": "Before {life event}, I really thought {wrong assumption}. Looking back, {reality}, because now {one specific, often funny detail}.",
+      "example": "Before I became a dad, I really thought I was busy. Looking back, I must've been staring at the ceiling and watching sports, because now I spend 12 straight hours taking orders from a 9-pound dictator who looks and acts exactly like my wife.",
+      "on_screen": "I THOUGHT I WAS BUSY BEFORE",
+      "best_for": "Parenting and life-transition niches. Found via /ig-viral on new-dad accounts: the single biggest outlier in that batch, 226.7x an account's own median. Runs long (this pack's hooks are usually 5-12 words; this formula's top performers ran 16+) and that length is part of why it works, not a flaw to trim.",
+      "trap": "Skipping the specific detail at the end. 'Now I'm so tired' is not checkable. '12 straight hours' and '9-pound dictator' are. The whole formula rides on that last concrete image landing.",
+      "match": "^\\s*before i\\b[^.!?]*\\b(?:i really thought|i thought)\\b|\\blooking back\\b[^.!?]*\\bbecause now\\b",
+      "typical_length": [18, 48]
+    },
+    {
+      "id": 28,
+      "name": "Exactly How",
+      "template": "Exactly how {I/we} {relatable, specific task}.",
+      "example": "Exactly how my wife and I get our daughter to sleep through the night at 2 months old.",
+      "on_screen": "EXACTLY HOW WE DID IT",
+      "best_for": "Tutorial/value content with no gimmick needed. Found via /ig-viral on new-dad accounts. The word 'exactly' is doing the trust-building work standing in for a testimonial; it promises the real method, not a summary of one.",
+      "trap": "A vague task. 'Exactly how we handle parenting' is not a task, it is a topic. Name the specific thing (sleep training, the daytime routine, the will) or the promise has nothing to pay off.",
+      "match": "^\\s*exactly how\\b|\\bthis is the exact\\b[^.!?]*\\b(?:routine|method|way|system)\\b",
+      "typical_length": [10, 22]
     }
   ],
   "classify_order": [
@@ -277,6 +299,8 @@
     5,
     4,
     3,
+    27,
+    28,
     15,
     20,
     7,

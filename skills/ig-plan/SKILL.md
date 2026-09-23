@@ -14,10 +14,16 @@ executed. Run it once a week, on the same day.
 
 ## Input
 
-If `~/.claude/instagram/voice.md`, `swipe.md` and `log.md` exist, read them.
-The swipe file is the user's own evidence from `/ig-viral` about which formulas
-are landing in their niche right now, and it outranks anything in this file.
-The log stops the plan repeating a theme from the last fortnight.
+If the user names a page for this plan, look first for
+`~/.claude/instagram/voice-<page>.md` (page name lowercased, spaces and
+punctuation turned to dashes) instead of the default `voice.md`. If
+`swipe.md` and `log.md` are also page-specific, look for
+`swipe-<page>.md` / `log-<page>.md` first and fall back to the shared files.
+
+If the voice file, `swipe.md` and `log.md` exist, read them. The swipe file
+is the user's own evidence from `/ig-viral` about which formulas are landing
+in their niche right now, and it outranks anything in this file. The log
+stops the plan repeating a theme from the last fortnight.
 
 If they do not exist, ask for four things and write them down:
 
@@ -95,6 +101,61 @@ ENGAGE  (5 reach / 3 peers / 2 buyers)
 Say "write Tuesday" and I will draft it.
 ```
 
-Write the plan to `~/.claude/instagram/plan.md` so the other skills can read
-it. Nothing is scheduled or posted anywhere. This is a plan and the user runs
-it.
+Write the plan to `~/.claude/instagram/plan-<page>.md` if a page was named,
+else `plan.md`, so the other skills can read it. Nothing is scheduled or
+posted anywhere. This is a plan and the user runs it.
+
+## Long-range / quarterly planning
+
+Everything above is one week. A quarter is a sequence of those weeks, built
+once as a skeleton (theme and content quota per week, not full scripts -
+scripting 12+ weeks in one pass produces guesses, not plans), then filled in
+week by week as `/ig-reel` and `/ig-carousel` actually run.
+
+**Lay the quarter out week by week, Monday-Sunday, real calendar dates -
+never assume a holiday's weekday or a month's week count. Compute it.**
+
+**Holiday weeks vs. season weeks.** Where a niche has recurring calendar
+holidays (a food/drink/gift page has one most months), give each holiday
+two weeks: the week before it and the week containing it. Every other week
+in that stretch is a season week - weather, general seasonal relevance, not
+tied to the specific date. Do not force an exact split if two holidays land
+close together in one month (Christmas and New Year's, 6 days apart, is the
+common case): let the back half of one holiday's week double as the next
+one's lead-in rather than manufacturing a second full lead-up week, and say
+that is what you did.
+
+**Reposting what works.** Never invent which posts are "top" - that comes
+from two real sources, both explicit in the plan whenever a repost slot is
+still open: (1) the account's own Insights, read via `/ig-audit` once real
+numbers exist, and (2) a `/ig-viral`-style scan of what's trending in the
+niche right now. A repost is never a re-run of the same asset: same recipe
+or idea, different glass/prop/environment, different visual treatment - a
+new production of a proven concept, not a duplicate file.
+
+**A non-reel week anchor.** If the account runs a recurring non-reel format
+(a "swap this for that" carousel is the common one for a product/recipe
+page), derive its content from that same week's reel lineup rather than
+writing it independently, unless the user says otherwise - the carousel's
+job is to reinforce the week it sits inside, not run a parallel theme.
+
+**Output shape**, one row per week:
+
+```
+Q4 2026 - <your page>
+
+W1  Sep28-Oct4   SEASON            4 reels + 1 swap carousel + 2 info carousels
+W2  Oct5-Oct11   SEASON            ...
+W3  Oct12-Oct18  SEASON            ...
+W4  Oct19-Oct25  HOLIDAY lead-up   Halloween (Oct 31, Sat)
+W5  Oct26-Nov1   HOLIDAY week      Halloween
+...
+
+Say "build week 4" and I will run that week through /ig-reel + /ig-carousel
+the way a normal week does. Nothing here is scripted yet - this is the
+skeleton the weeks get built against.
+```
+
+Write it to `~/.claude/instagram/plan-<page>-q<N>-<year>.md`. The standing
+weekly `plan-<page>.md` stays the single source of truth for *this* week;
+the quarterly file is the map that week gets pulled from.

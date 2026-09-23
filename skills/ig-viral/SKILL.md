@@ -171,8 +171,18 @@ YOUR VERSION
   ...
 ```
 
-Write the swipe file to `~/.claude/instagram/swipe.md`. `/ig-reel` and
-`/ig-plan` both read it, which is the point: after this runs once, the rest of
-the pack is working from the user's own evidence instead of from defaults.
+Write the swipe file to `~/.claude/instagram/swipe-<page>.md` if a page was
+named, else `swipe.md`. `/ig-reel` and `/ig-plan` both read it, which is the
+point: after this runs once, the rest of the pack is working from the
+user's own evidence instead of from defaults.
 
 Nothing is posted, followed, liked or messaged by this skill. It reads.
+
+## Output
+
+Also render the swipe file to a PDF in the project's `Viral/<Page>/` folder
+if one exists, named `<date>.md` -> `<date>.pdf` (same dated-snapshot
+convention as `Voices/`, `Plans/` and `Audits/`, using
+`_tools/md_to_pdf.py`). Never overwrite a prior date - each run of this
+skill is its own dated snapshot, so the user can see how the niche's
+evidence shifted over time.

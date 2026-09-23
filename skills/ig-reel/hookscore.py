@@ -32,6 +32,7 @@ Usage
 
 import argparse
 import json
+import os
 import re
 import statistics
 import sys
@@ -109,6 +110,33 @@ DEALBREAKERS = [
 ]
 
 
+HOOKS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hooks.json")
+
+
+def load_length_overrides(path=HOOKS_PATH):
+    """Some formulas run long on purpose - their own field evidence says so,
+    not just their template. hooks.json can mark one with "typical_length":
+    [low, high], and the default 5-12-word curve steps aside for it here."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return []
+    out = []
+    for h in data.get("hooks", []):
+        span = h.get("typical_length")
+        pattern = h.get("match")
+        if span and pattern:
+            try:
+                out.append((h.get("name", f"#{h.get('id')}"), re.compile(pattern, re.IGNORECASE), span))
+            except re.error:
+                continue
+    return out
+
+
+LENGTH_OVERRIDES = load_length_overrides()
+
+
 def clamp(n):
     return max(0.0, min(100.0, n))
 
@@ -119,20 +147,30 @@ def words(text):
 
 
 def check_length(text):
-    """A hook has to land before the thumb moves. Roughly two seconds."""
+    """A hook has to land before the thumb moves. Roughly two seconds -
+    except for the formulas whose own field evidence says otherwise."""
     w = words(text)
     n = len(w)
     secs = n / 2.75                      # ~165 words per minute, spoken
     chars = len(text.strip())
-    if 5 <= n <= 12:
+
+    lo, hi, want, override_name = 5, 12, "5-12 words", None
+    for name, pattern, span in LENGTH_OVERRIDES:
+        if pattern.search(text):
+            lo, hi = span
+            want = f"{lo}-{hi} words, per {name}'s own field evidence"
+            override_name = name
+            break
+
+    if lo <= n <= hi:
         score = 100.0
-    elif n < 5:
-        score = clamp(100 - (5 - n) * 20)
+    elif n < lo:
+        score = clamp(100 - (lo - n) * 20)
     else:
-        score = clamp(100 - (n - 12) * 11)
-    if chars > 60:                       # two lines of big on-screen text
-        score -= 12
-    return clamp(score), f"{n} words, {chars} chars, ~{secs:.1f}s spoken (want 5-12 words)"
+        score = clamp(100 - (n - hi) * 11)
+    if chars > 60 and not override_name:  # two lines of big on-screen text -
+        score -= 12                       # not a penalty for formulas built to run long
+    return clamp(score), f"{n} words, {chars} chars, ~{secs:.1f}s spoken (want {want})"
 
 
 def check_specificity(text):

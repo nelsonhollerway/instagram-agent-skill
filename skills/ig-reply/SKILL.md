@@ -17,6 +17,16 @@ most underused move on the platform.
 But the value is not equal across comments, so this skill sorts before it
 writes.
 
+## Voice
+
+If the user names a page, brand or account for this request, look first for
+`~/.claude/instagram/voice-<page>.md`, where `<page>` is that name lowercased
+with spaces and punctuation turned to dashes, and use that instead of the
+default. Otherwise read `~/.claude/instagram/voice.md` if it exists. If
+neither file exists, ask which page this is for (when more than one
+`voice-*.md` file exists in `~/.claude/instagram/`) and write in the voice the
+user describes.
+
 ## Input
 
 The user pastes the comments, ideally with handles. Screenshots are fine. Do

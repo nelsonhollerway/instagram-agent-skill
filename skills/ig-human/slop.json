@@ -1,6 +1,17 @@
 {
   "version": "1.0",
   "note": "Lexicon used by humanize.py and detect.py. Replacements are plain-English and keep the sentence grammatical. The last block of each list is Instagram-specific: caption and voiceover slop that does not show up on other platforms. Edit freely - it is meant to be yours.",
+  "formats": {
+    "recipe-card": {
+      "skip_structures": ["emoji-bullets", "caps-shout", "rocket"],
+      "voice_baseline": {
+        "contractions_human": 1.0,
+        "person_human": 1.0,
+        "note": "Method steps are imperative-mood recipe instructions ('Combine the juices', 'Wet the rim') - low contraction and personal-pronoun density is the genre, not a machine tell. Calibrated against a real recipe/drink-card account's own posted caption, which measured about 1.6 contractions and 1.1 pronouns per 100 words."
+      },
+      "note": "Ingredient lists with emoji bullets and one ALL-CAPS product-name title are the real, evidenced house style for recipe/drink-card accounts (verified against a real recipe/drink-card account's actual posted content), not AI-slop patterns. Pass --format recipe-card to detect.py/humanize.py to stop flagging them for this content type."
+    }
+  },
   "invisible": [
     {
       "cp": "U+200B",
@@ -969,9 +980,9 @@
     },
     {
       "id": "hashtag-wall",
-      "regex": "(?:#\\w+[ \\t]*){5,}",
-      "name": "Hashtag wall (5+)",
-      "fix": "Three hashtags. LinkedIn stopped rewarding the wall."
+      "regex": "(?:#\\w+[ \\t]*){6,}",
+      "name": "Hashtag wall (6+)",
+      "fix": "Five or fewer, per this pack's own caption rule and Instagram's Dec 2025 cap."
     },
     {
       "id": "as-an-ai",

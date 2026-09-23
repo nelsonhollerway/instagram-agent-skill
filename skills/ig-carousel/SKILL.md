@@ -17,6 +17,16 @@ the first time, so slide two has to stand on its own as well.
 The format rewards one idea broken into steps. It punishes a caption cut into
 pieces.
 
+## Voice
+
+If the user names a page, brand or account for this request, look first for
+`~/.claude/instagram/voice-<page>.md`, where `<page>` is that name lowercased
+with spaces and punctuation turned to dashes, and use that instead of the
+default. Otherwise read `~/.claude/instagram/voice.md` if it exists. If
+neither file exists, ask which page this is for (when more than one
+`voice-*.md` file exists in `~/.claude/instagram/`) and write in the voice the
+user describes.
+
 ## When to use it instead of a Reel
 
 Use a carousel when the idea has **sequence and needs to be re-read**: steps, a
@@ -62,25 +72,59 @@ LAST      CTA       one action. Save, comment a keyword, or follow. One.
 
 ## Building the files
 
-Instagram wants 1080x1350 (4:5), JPEG or PNG, up to 20 items. Build it as HTML
-and print each slide:
+Instagram wants 1080x1350 (4:5), JPEG or PNG, up to 20 items.
+
+**Composite with `_tools/compose_carousel_slide.py`** (Pillow), not
+HTML-to-image - a headless-Chrome or HTML-print pipeline needs a rendering
+sandbox this project's environment does not reliably grant to local
+file:// pages, backgrounds included. The compositor script takes a JSON
+spec (one object per slide: `bg_path`, `out_path`, `eyebrow`, `headline`,
+`sub`, `handle`, `pagenum`, `scrim` "top"/"bottom", optional `cta`) and
+draws a dark gradient scrim plus the slide text directly onto the
+generated background at full 1080x1350, including a permanent footer bar
+so the handle and page number stay legible over any background.
 
 ```bash
-# one <section> per slide, 1080x1350, page-break-after: always
-# then Chrome headless --print-to-pdf, or any HTML-to-image you already use
+python3 "_tools/compose_carousel_slide.py" slide_spec.json
 ```
 
-Write the HTML with `width:1080px; height:1350px`, a single accent colour, and
-type no smaller than 32px, because this is read on a phone at a third of its
-real size. If the project has a brand skill or a design system, use it and do
-not invent a palette.
+A single accent colour, type no smaller than 32px (the script defaults are
+already tuned to that), because this is read on a phone at a third of its
+real size. If the project has a brand skill or a design system, use it and
+do not invent a palette.
+
+Generate the backgrounds first with `generate_image_batch`, download each
+result, and compress large PNGs to JPEG (`sips -s format jpeg -s
+formatOptions 55`) before compositing - keeps output files small without a
+visible quality loss. Save everything under
+`Drafts/<page>/Carousel/<treatment name>/`: raw generations in
+`backgrounds/`, the finished slides in `final/`.
+
+## AI generation prompts for the slide images
+
+Write one image-generation prompt per slide, for whatever AI image tool the
+user feeds them into. This is the background photography only - the slide
+copy is added on top afterward as the HTML text layer, so **never put text
+in the image prompt itself**, and say where the copy will sit so the
+composition leaves it room (e.g. "clean negative space in the upper third
+for a headline").
+
+Per slide, one line: the concrete subject, the composition, the lighting/
+mood consistent with the account's established look, 1080x1350 portrait
+framing, and the text-safe zone. Name the actual thing in frame - "a
+cinnamon-sugar-rimmed glass on a wood table" generates something; "a nice
+drink" does not.
+
+Same rule as the reel screenplay: this is production tooling for making
+the image, not for disguising that it was AI-made.
 
 ## Output
 
 The slide-by-slide copy first, as a numbered list the user can read in ten
-seconds and edit before anything is rendered. Then the **caption**, which for a
-carousel is Job B in `/ig-caption`: the caption is doing work here, because the
-cover has already used its six words.
+seconds and edit before anything is rendered. Then the AI generation prompts,
+one per slide. Then the **caption**, which for a carousel is Job B in
+`/ig-caption`: the caption is doing work here, because the cover has already
+used its six words.
 
 Run both through `/ig-human`. Build the files only after the user approves the
 copy.

@@ -24,8 +24,8 @@ Ask for whichever the user has:
   screenshot is worth more than the rest combined.
 - Or just the posts and their view counts, which is enough for a first pass.
 
-Also read `~/.claude/instagram/log.md` if it exists, since it records which
-hook formula each post used.
+Also read `~/.claude/instagram/log-<page>.md` if a page was named (else
+`log.md`), if it exists, since it records which hook formula each post used.
 
 ## What to actually measure
 
@@ -102,3 +102,11 @@ DO MORE: the ones with a cost you paid and a number attached.
 Then hand the conclusions to `/ig-plan` so next week is built on the user's own
 evidence rather than on defaults, and to `/ig-viral` so the swipe file gets
 filtered to the formulas that work for this account specifically.
+
+## Output
+
+Write the audit to `~/.claude/instagram/audit-<page>-<date>.md` (a page was
+named, else `audit-<date>.md`), then render it to a PDF in the project's
+`Audits/<Page>/` folder if one exists (same generator as `Voices/` and
+`Plans/`: `_tools/md_to_pdf.py`). Regenerate that PDF whenever the source
+changes, the same way every other generated PDF in this project works.

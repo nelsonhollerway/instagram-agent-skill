@@ -24,11 +24,19 @@ python3 beats.py script.txt --target 30     # timed beat sheet before you shoot
 
 ## Before you write
 
-1. Read `~/.claude/instagram/voice.md` if it exists. That is the user's voice
-   profile: how they talk on camera, what they never say, who they are talking
-   to. If it does not exist, ask for **three of their own reels**, transcribe or
-   read them, infer the voice, and write the file. A script in the wrong voice
-   is unusable, because they have to say it out loud.
+1. **Multiple pages.** If the user names a page, brand or account for this
+   request (a handle, "my fitness page", "the NXTN account"), first look for
+   `~/.claude/instagram/voice-<page>.md`, where `<page>` is that name
+   lowercased with spaces and punctuation turned to dashes. Use that file
+   instead of the default below. If they run this skill often and haven't
+   named a page, and more than one `voice-*.md` file exists in
+   `~/.claude/instagram/`, ask which page this is for before writing.
+   Otherwise read `~/.claude/instagram/voice.md` if it exists. That is the
+   user's voice profile: how they talk on camera, what they never say, who
+   they are talking to. If neither file exists, ask for **three of their own
+   reels**, transcribe or read them, infer the voice, and write it to
+   `voice-<page>.md` if a page was named, else `voice.md`. A script in the
+   wrong voice is unusable, because they have to say it out loud.
 2. Read `hooks.json` in this folder. 26 formulas, each with a template, a filled
    example, the on-screen version, what it is for, and how it gets ruined.
    Four of them are in there because they kept turning up in real hooks, not
@@ -36,7 +44,9 @@ python3 beats.py script.txt --target 30     # timed beat sheet before you shoot
 3. If the idea is thin, do not pad it. Ask one batched question: what happened,
    to whom, and what did it cost or return. A Reel needs one specific true
    thing. Get it before writing.
-4. If `~/.claude/instagram/swipe.md` exists, read it. `/ig-viral` writes that
+4. If a page was named in step 1, look first for
+   `~/.claude/instagram/swipe-<page>.md`. Otherwise, if
+   `~/.claude/instagram/swipe.md` exists, read it. `/ig-viral` writes that
    file, and it is the user's own evidence about which formulas are working in
    their niche right now. It beats the defaults in this file.
 
@@ -79,7 +89,8 @@ concrete in them, no loop. Re-run until it is clean.
 written-sounding line is obvious the moment someone says it out loud.
 
 **6. Print the block.** The script in a fenced block, the on-screen text as a
-separate list with timings, and then:
+separate list with timings, the AI-generation screenplay too if this page is
+faceless (see below), and then:
 
 ```
 REEL READY
@@ -93,8 +104,9 @@ Reply "yes" to log it, or tell me what to change.
 ```
 
 **7. Never publish.** This skill produces a script. The user shoots it and
-posts it. On "yes", append to `~/.claude/instagram/log.md` with the date, the
-hook formula used and the first line, so `/ig-audit` has a history later.
+posts it. On "yes", append to `~/.claude/instagram/log-<page>.md` if a page
+was named, else `log.md`, with the date, the hook formula used and the first
+line, so `/ig-audit` has a history later.
 
 ## On-screen text is a separate script
 
@@ -110,6 +122,47 @@ Write it separately, every time. It is read before it is heard.
 - **Never put the hook where the caption sits.** That is the bottom of the
   frame and it is covered.
 - **Burn in captions for the body.** Most people watch muted first.
+
+## Faceless pages: also write the AI-generation screenplay
+
+Check the voice file. If it says faceless with no voiceover ("Face on
+camera: faceless", "Voiceover or to-camera: neither"), that reel isn't
+being shot on a camera - it's being generated. Write a second block after
+the on-screen cards: a shot-by-shot prompt for an AI video/image generator
+(Sora, Runway, Veo, Kling, whichever the user uses), not for a viewer to
+read. This is production tooling, not a substitute for the on-screen cards -
+keep both.
+
+Per shot, one line: **number, duration, camera move, the concrete subject
+and action, lighting/mood, which on-screen card (if any) overlays here.**
+Name the exact thing on screen - the drink, the glass, the garnish, the
+pour - the way a real shot list does, not "a nice drink." A generator
+produces what it's told, and "an attractive beverage" produces nothing
+usable.
+
+```
+AI GENERATION SCREENPLAY
+style:  warm, moody, autumnal - practical light only, shallow depth of
+        field, no visible hands unless pouring
+aspect: 9:16 vertical
+audio:  trending sound, chosen at edit - not written here
+
+1.  0:00-0:02  Slow push-in on a full pitcher of ruby-red sangria, ice
+    and orange wheels visible, steam-free glass exterior, soft window
+    light from camera-left.  [card 1: FRIENDSGIVING SUNSET SANGRIA]
+2.  0:02-0:05  Overhead, hands pouring from the pitcher into a stemmed
+    wine glass with a sugared rim, liquid catching the light mid-pour.
+    [card 2: ZERO PROOF. ONE PITCHER.]
+3.  0:05-0:08  Static close-up, a rosemary sprig and orange wheel being
+    placed on the rim, shallow focus, warm practical light.
+...
+```
+
+Never write "AI-generated" out of the shot list to make it *not* look
+AI-generated once produced - that's a platform-disclosure question, not a
+style one, and this pack doesn't help with that (see the page's own voice
+file for the standing note on it). This block is about what to generate,
+not about hiding how it was made.
 
 ## Rules that make the difference
 

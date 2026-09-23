@@ -18,7 +18,19 @@ eyeball this.
 python3 humanize.py draft.txt --report        # clean it, show what changed
 python3 detect.py draft.txt                    # score it, five checks
 python3 detect.py before.txt after.txt         # prove the delta
+python3 detect.py draft.txt --format recipe-card   # for a format with its own real conventions
 ```
+
+## Content formats with their own real conventions
+
+Some formats have structural patterns (an emoji bullet list, one ALL-CAPS
+product title) that this checker would normally flag as AI-slop, but that
+are that format's actual, evidenced house style - not a machine tell. Check
+`slop.json`'s `"formats"` block; if the account's content matches one (a
+recipe/drink-card account is the first example), pass `--format <name>` to
+both scripts so those specific checks stand down. Verify against real posted
+examples before trusting a format exception, the same way you would verify
+anything else in this pack.
 
 Both read `slop.json`: 154 stock words and phrases with plain-English
 replacements, 18 invisible character classes, 11 typographic substitutions and

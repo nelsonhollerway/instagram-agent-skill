@@ -164,9 +164,12 @@ def pass_lexical(text, lex):
     return text, hits
 
 
-def scan_structures(text, lex):
+def scan_structures(text, lex, skip_structures=None):
+    skip_structures = skip_structures or set()
     flags = []
     for s in lex["structures"]:
+        if s["id"] in skip_structures:
+            continue
         try:
             pattern = re.compile(s["regex"], re.MULTILINE)
         except re.error:
@@ -203,7 +206,10 @@ def restore_capitals(original, text):
                   lambda m: m.group(0)[:-1] + m.group(1).upper(), text)
 
 
-def humanize(text, lex):
+def humanize(text, lex, fmt=None):
+    skip_structures = set()
+    if fmt:
+        skip_structures = set(lex.get("formats", {}).get(fmt, {}).get("skip_structures", []))
     raw_for_case = text
     text, urls = protect_urls(text)
     text, inv = pass_invisible(text, lex)
@@ -215,7 +221,7 @@ def humanize(text, lex):
         "invisible": inv,
         "typographic": typo,
         "lexical": lexi,
-        "structures": scan_structures(text, lex),
+        "structures": scan_structures(text, lex, skip_structures),
     }
 
 
@@ -260,11 +266,15 @@ def main():
     ap.add_argument("--report", action="store_true", help="print what changed, to stderr")
     ap.add_argument("--json", action="store_true", help="emit {text, report} as JSON")
     ap.add_argument("--lexicon", default=LEX, help="path to slop.json")
+    ap.add_argument("--format", dest="fmt", default=None,
+                     help="content format from slop.json's \"formats\" block "
+                          "(e.g. recipe-card) - suppresses structural-tell "
+                          "checks that are that format's real house style")
     args = ap.parse_args()
 
     raw = sys.stdin.read() if args.input == "-" else open(args.input, encoding="utf-8").read()
     lex = load_lexicon(args.lexicon)
-    clean, report = humanize(raw, lex)
+    clean, report = humanize(raw, lex, args.fmt)
 
     if args.json:
         print(json.dumps({"text": clean, "report": report}, indent=2, ensure_ascii=False))
